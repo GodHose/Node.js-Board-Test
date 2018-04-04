@@ -1,0 +1,178 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>Node.js Board Test</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<link rel="stylesheet" href="./css/style.css">
+	<link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet" type="text/css">
+	<link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet" type="text/css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body id="myPage" data-spy="scroll" data-target=".navbar" data-offset="60">
+
+<!-- Header -->
+<nav class="navbar navbar-default navbar-fixed-top">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>                        
+      </button>
+      <a class="navbar-brand" href="/">Board Test</a>
+    </div>
+    <div class="collapse navbar-collapse" id="myNavbar">
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="#about">Board</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- 회원가입 Modal -->
+<div class="modal fade" id="accountModal">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h4 class="modal-title">회원가입</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+
+      <!-- Modal body -->
+      <div class="modal-body">
+        <form action="./account.asp" method="post">
+			<input type="text" class="form-control" name="id" placeholder="아이디" required /><br/>
+			<input type="password" class="form-control" name="pw" placeholder="패스워드" required /><br/>
+			<input type="text" class="form-control" name="nickname" placeholder="로그인" required /><br/>
+			<input type="submit" class="form-control" value="회원가입" />
+		</form>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Container (About Section) -->
+<div id="about" class="container-fluid">
+	<div class="row">
+		<div class="col-sm-12">
+			<div class="col-sm-9">
+				<h2>게시판</h2><br>
+			</div>
+			<div class="col-sm-3 text-center" style="border:1px solid black; padding:10px;">
+				<% if(session.userId == null || session.userId == ""){ %>
+				<form action="./login" method="post">
+					<input type="text" class="form-control" name="id" placeholder="아이디" /><br/>
+					<input type="password" class="form-control" name="pw" placeholder="패스워드" /><br/>
+					<input type="submit" class="form-control btn-primary" value="로그인" /><br/>
+					<a href="#" data-toggle="modal" data-target="#accountModal">아직도 회원이 아니신가요?</a>
+				</form>
+				<% } else { %>
+				<form action="./logout" method="post">
+					<input type="text" class="form-control" name="id" value="환영합니다." readonly /><br/>
+					<input type="text" class="form-control" name="nick" value="<%= session.nickname %>님" readonly /><br/>
+					<input type="submit" class="form-control btn-primary" value="로그아웃" /><br/>
+					&nbsp;
+				</form>
+				<% } %>
+			</div>
+
+			<div class="col-sm-12 text-right" style="margin-top:10px;">
+				<div class="form-group">
+					<select class="form-inline" id="view_content_count">
+						<option>15개씩 보기</option>
+						<option>20개씩 보기</option>
+						<option>30개씩 보기</option>
+						<option>50개씩 보기</option>
+						
+					</select>
+				</div>
+			</div>
+		
+			<table class="table table-hover">
+				<colgroup>
+					<col width="5%">
+					<col width="30%">
+					<col width="10%">
+					<col width="15%">
+					<col width="10%">
+				</colgroup>
+				<thead>
+					<tr>
+						<th>번호</th>
+						<th>제목</th>
+						<th>작성자</th>
+						<th>작성일</th>
+						<th>조회 수</th>
+					</tr>
+				</thead>
+				<tbody id="board">
+				</tbody>
+			</table>
+			<div class="col-sm-1 text-left">
+				<div class="btn-group">
+					<button class="btn btn-primary btn-write">쓰기</button>
+				</div>
+			</div>
+
+			<div class="col-sm-10 text-center">
+				<ul class="pagination">
+									
+				</ul>
+			</div>
+
+		</div>
+	</div>
+</div>
+
+<!-- Footer -->
+<footer class="container-fluid text-center bg-grey">
+	<a href="#myPage" title="To Top">
+		<span class="glyphicon glyphicon-chevron-up"></span>
+	</a>
+	<p>Board Test Made By Eduwill Project Internship</p>
+</footer>
+
+<script>
+
+$(document).ready(function(){
+	// 읽기
+	$("tr").click(function(){
+		if(this.id > 0){
+			window.location.href="./read.asp?bno="+this.id;
+		}
+	});
+	// 쓰기
+	$(".btn-write").click(function(){
+		window.location.href="./write_form.asp";
+	});
+	// 
+	$.ajax({
+		url: "./board/list"
+		,method: "get"
+		,success: function(result){
+			if(result != null && result.length > 0){
+				result.forEach(function(item, index){
+					var tmp = $("#board").html();
+					var adder =	"<tr>";
+					adder +=	"<td>" + item.bno + "</td>";
+					adder +=	"<td>" + item.title + "</td>";
+					adder +=	"<td>" + item.writer + "</td>";
+					adder +=	"<td>" + item.regdate + "</td>";
+					adder +=	"<td>" + item.viewcnt + "</td>";
+					adder +=	"</tr>"
+					
+					$("#board").html(tmp + adder);
+				});
+			}
+    		}});
+	});
+</script>
+
+</body>
+</html>
