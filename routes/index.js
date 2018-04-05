@@ -22,6 +22,7 @@ router.route('/').all(function(req, res){
 
 	res.render("index.html",{
 		session: req.session
+		,msg : ''
 	});
 });
 
