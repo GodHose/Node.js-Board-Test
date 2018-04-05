@@ -140,9 +140,16 @@
 
 <script>
 
+function readContent(bno){
+	if(bno > 0){
+		window.location.href="/board/read?bno="+bno;
+	}
+}
+
 $(document).ready(function(){
 	// 읽기
 	$("tr").click(function(){
+		alert('일단 눌리긴 함?');
 		if(this.id > 0){
 			window.location.href="./read.asp?bno="+this.id;
 		}
@@ -159,13 +166,13 @@ $(document).ready(function(){
 			if(result != null && result.length > 0){
 				result.forEach(function(item, index){
 					var tmp = $("#board").html();
-					var adder =	"<tr>";
+					var adder =	"<tr onclick='readContent(" + item.bno + "); return false;'>";
 					adder +=	"<td>" + item.bno + "</td>";
 					adder +=	"<td>" + item.title + "</td>";
-					adder +=	"<td>" + item.writer + "</td>";
+					adder +=	"<td>" + item.nickname + "</td>";
 					adder +=	"<td>" + item.regdate + "</td>";
 					adder +=	"<td>" + item.viewcnt + "</td>";
-					adder +=	"</tr>"
+					adder +=	"</tr>";
 					
 					$("#board").html(tmp + adder);
 				});

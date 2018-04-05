@@ -44,9 +44,10 @@ if(session.userId == null || session.userId == ""){
 </nav>
 
 <!-- Container (About Section) -->
-<div id="about" class="container-fluid">
+<div id="about" class="container-fluid" style="margin-top:50px;">
 	<div class="row">
 		<div class="col-sm-12">
+			<% if(bno == null || bno == ""){ %>
 			<h2>게시글 쓰기</h2><br/>
 			<div class="form-group">
 				<label for="title">제목:</label>
@@ -64,14 +65,39 @@ if(session.userId == null || session.userId == ""){
 				<button class="btn btn-secondary btn-list">목록</button>
 				<button class="btn btn-primary btn-write">쓰기</button>
 			</div>
+			<% } else { %>
+			
+			<h2>게시글 수정</h2><br/>
+			<div class="form-group">
+				<label for="title">제목:</label>
+				<input type="text" class="form-control" id="title" name="title" placeholder="제목" value="<%=title%>"/>
+			</div>
+			<div class="form-group">
+				<label for="writer">작성자:</label>
+				<input type="text" class="form-control" id="writer" name="writer" value="<%= session.nickname %>" readonly />
+			</div>
+			<div class="form-group">
+				<label for="content">내용:</label>
+				<textarea class="form-control" rows="5" id="content" name="content"><%=content%></textarea>
+			</div>
+			<div class="btn-group">
+				<button class="btn btn-secondary btn-list">목록</button>
+				<button class="btn btn-primary btn-update">수정</button>
+			</div>
+			<% }%>
 		</div>
 	</div>
 </div>
 
 <form action="./write" method="post" id="frm" name="frm">
 	<input type="hidden" name="title">
-	<input type="hidden" name="writer">
 	<input type="hidden" name="content">
+</form>
+
+<form action="./update" method="put" id="updateForm" name="updateForm">
+	<input type="hidden" id="bno" name="bno" value="" />
+	<input type="hidden" id="title" name="title" value="" />
+	<input type="hidden" id="content" name="content" value="" />
 </form>
 
 <!-- Footer -->
@@ -94,10 +120,9 @@ $(document).ready(function(){
 	$(".btn-write").click(function(){
 		if(confirm("글을 작성하시겠습니까?")){
 			document.frm.title.value=$("#title").val();
-			document.frm.writer.value=$("#writer").val();
 			document.frm.content.value=$("#content").val();
 			document.frm.submit();
-		}		
+		}	
 	});
 });
 </script>
