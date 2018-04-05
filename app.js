@@ -2,6 +2,7 @@ var express = require('express');
 var http = require('http');
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
+var flash = require('express-flash');
 
 // EXPRESS
 var app = express();
@@ -36,6 +37,7 @@ var server = http.createServer(app);
 server.listen(app.get('port'));
 
 // MIDDLEWARE
+app.use(flash());
 
 // ROUTER
 var routerIndex = require('./routes/index');

@@ -80,7 +80,7 @@ $(document).ready(function(){
 	});
 	//수정
 	$(".btn-update").click(function(){
-		window.location.href="/board/update/?bno=" + <%= bno %>
+		window.location.href="/board/update?bno=" + <%= bno %>
 	});
 	//삭제
 	$(".btn-remove").click(function(){
@@ -99,6 +99,11 @@ $(document).ready(function(){
 		}		
 	});
 });
+
+var msg = "<%=messages.msg%>";
+if(msg != null && msg != ""){
+	alert(msg);
+}
 </script>
 
 </body>

@@ -89,17 +89,18 @@ if(session.userId == null || session.userId == ""){
 	</div>
 </div>
 
+<% if(bno == null || bno == ""){%>
 <form action="./write" method="post" id="frm" name="frm">
 	<input type="hidden" name="title">
 	<input type="hidden" name="content">
 </form>
-
-<form action="./update" method="put" id="updateForm" name="updateForm">
-	<input type="hidden" id="bno" name="bno" value="" />
-	<input type="hidden" id="title" name="title" value="" />
-	<input type="hidden" id="content" name="content" value="" />
+<%}else{%>
+<form action="./update" method="post" id="updateForm" name="updateForm">
+	<input type="hidden" id="bno" name="bno" value="<%=bno%>" />
+	<input type="hidden" name="title" value="<%=title%>" />
+	<input type="hidden" name="content" value="<%=content%>" />
 </form>
-
+<%}%>
 <!-- Footer -->
 <footer class="container-fluid text-center bg-grey">
 	<a href="#myPage" title="To Top">
@@ -113,7 +114,7 @@ $(document).ready(function(){
 	//목록
 	$(".btn-list").click(function(){
 		if(confirm("글 목록으로 돌아가시겠습니까?\n\n작성 내용은 모두 사라집니다")){
-			window.location.href="./";
+			window.location.href="/";
 		}
 	});
 	//쓰기
@@ -123,6 +124,14 @@ $(document).ready(function(){
 			document.frm.content.value=$("#content").val();
 			document.frm.submit();
 		}	
+	});
+	//수정
+	$(".btn-update").click(function(){
+		if(confirm("글을 수정하시겠습니까?")){
+			$("#updateForm").find("input[name=title]").val($("#title").val());
+			$("#updateForm").find("input[name=content]").val($("#content").val());
+			$("#updateForm").submit();
+		}
 	});
 });
 </script>
