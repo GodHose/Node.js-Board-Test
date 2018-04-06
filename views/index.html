@@ -112,6 +112,21 @@
 					</tr>
 				</thead>
 				<tbody id="board">
+				<%
+				if(cnt > 0){
+					for(var i=0; i<result.length; i++){
+				%>
+				<tr id="<%=result[i].bno%>">
+					<td><%=result[i].bno%></td>
+					<td><%=result[i].title%></td>
+					<td><%=result[i].nickname%></td>
+					<td><%=result[i].regdate%></td>
+					<td><%=result[i].viewcnt%></td>
+				</tr>
+				<%
+					}
+				}
+				%>
 				</tbody>
 			</table>
 			<div class="col-sm-1 text-left">
@@ -122,7 +137,46 @@
 
 			<div class="col-sm-10 text-center">
 				<ul class="pagination">
-									
+					<%
+					prev_disabled="", prev_href="";
+					next_disabled="", next_href="";
+					param.page*=1;
+					param.pageSize*=1;			
+	
+					// 이전 버튼	
+					if(param.page == 1)prev_disabled="disabled";
+					else prev_href="./?page=" + (param.page-1) + "&pageSize=" + param.pageSize;
+					%>
+					<li class='page-item <%=prev_disabled%>'><a class='page-link' href='<%=prev_href%>'>이전</a></li>
+
+					<%
+					// 페이징 리스트
+					var i=((parseInt((param.page-1)/10))*10)+1, count=0;
+					var listactive="";
+
+					while(count < 10 && (i*param.pageSize < cnt+param.pageSize)) {
+						listactive="";
+						if(i == param.page)listactive="active";
+						%>
+						<li class="page-item <%=listactive%>"><a class="page-link" href="./?page=<%=i%>&pageSize=<%=param.pageSize%>"><%=i%></a></li>
+						<%
+						i = i + 1;
+						count = count + 1;
+					}
+					%>
+
+					<%
+					// 다음 버튼
+					max_page = 1;
+					while(max_page*pageSize < cnt + pageSize){
+						max_page = max_page + 1;
+					}
+					max_page = max_page -1;
+
+					if(param.page == max_page)next_disabled="disabled";
+					else next_href="./?page=" + (param.page+1) + "&pageSize" + param.pageSize;
+					%>
+					<li class="page-item <%=next_disabled%>"><a class="page-link" href="<%=next_href%>">다음</a></li>
 				</ul>
 			</div>
 
@@ -150,14 +204,15 @@ $(document).ready(function(){
 	// 읽기
 	$("tr").click(function(){
 		if(this.id > 0){
-			window.location.href="./read.asp?bno="+this.id;
+			window.location.href="/board/read?bno="+this.id;
 		}
 	});
 	// 쓰기
 	$(".btn-write").click(function(){
 		window.location.href="/board/write";
 	});
-	// 
+	//
+	/*
 	$.ajax({
 		url: "./board/list"
 		,method: "get"
@@ -176,8 +231,11 @@ $(document).ready(function(){
 					$("#board").html(tmp + adder);
 				});
 			}
-    		}});
-	});
+		}
+    	});
+	*/
+});
+	
 
 	var msg = '<%= messages.msg %>';
 
