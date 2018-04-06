@@ -85,10 +85,10 @@
 			<div class="col-sm-12 text-right" style="margin-top:10px;">
 				<div class="form-group">
 					<select class="form-inline" id="view_content_count">
-						<option>15개씩 보기</option>
-						<option>20개씩 보기</option>
-						<option>30개씩 보기</option>
-						<option>50개씩 보기</option>
+						<option <%if(param.pageSize == 15){%>selected<%}%>>15개씩 보기</option>
+						<option <%if(param.pageSize == 20){%>selected<%}%>>20개씩 보기</option>
+						<option <%if(param.pageSize == 30){%>selected<%}%>>30개씩 보기</option>
+						<option <%if(param.pageSize == 50){%>selected<%}%>>50개씩 보기</option>
 						
 					</select>
 				</div>
@@ -210,6 +210,11 @@ $(document).ready(function(){
 	// 쓰기
 	$(".btn-write").click(function(){
 		window.location.href="/board/write";
+	});
+	// 페이징 사이즈 변경
+	$("#view_content_count").change(function(){
+		var count = $(this).val().substring(0, 2) * 1;
+		window.location.href="?page=<%=param.page%>&pageSize="+count;
 	});
 	//
 	/*
