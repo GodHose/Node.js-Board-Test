@@ -5,7 +5,7 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-	<link rel="stylesheet" href="./css/style.css">
+	<link rel="stylesheet" href="/css/style.css">
 	<link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet" type="text/css">
 	<link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet" type="text/css">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
@@ -15,21 +15,21 @@
 
 <!-- Header -->
 <nav class="navbar navbar-default navbar-fixed-top">
-  <div class="container">
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>                        
-      </button>
-      <a class="navbar-brand" href="/">Board Test</a>
-    </div>
-    <div class="collapse navbar-collapse" id="myNavbar">
-      <ul class="nav navbar-nav navbar-right">
-        <li><a href="#about">Board</a></li>
-      </ul>
-    </div>
-  </div>
+	<div class="container">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>                        
+			</button>
+			<a class="navbar-brand" href="/">Board Test</a>
+		</div>
+		<div class="collapse navbar-collapse" id="myNavbar">
+			<ul class="nav navbar-nav navbar-right">
+				<li><a href="#about">Board</a></li>
+			</ul>
+		</div>
+	</div>
 </nav>
 
 <!-- 회원가입 Modal -->
@@ -45,12 +45,12 @@
 
       <!-- Modal body -->
       <div class="modal-body">
-        <form action="./account.asp" method="post">
-			<input type="text" class="form-control" name="id" placeholder="아이디" required /><br/>
-			<input type="password" class="form-control" name="pw" placeholder="패스워드" required /><br/>
-			<input type="text" class="form-control" name="nickname" placeholder="닉네임" required /><br/>
-			<input type="submit" class="form-control" value="회원가입" />
-		</form>
+        <form action="/account" method="post">
+		<input type="text" class="form-control" name="id" placeholder="아이디" required /><br/>
+		<input type="password" class="form-control" name="pw" placeholder="패스워드" required /><br/>
+		<input type="text" class="form-control" name="nick" placeholder="닉네임" required /><br/>
+		<input type="submit" class="form-control" value="회원가입" />
+	</form>
       </div>
 
     </div>
@@ -58,7 +58,7 @@
 </div>
 
 <!-- Container (About Section) -->
-<div id="about" class="container-fluid" style="margin-top:50px;">
+<div id="about" class="container-fluid">
 	<div class="row">
 		<div class="col-sm-12">
 			<div class="col-sm-9">
@@ -149,7 +149,6 @@ function readContent(bno){
 $(document).ready(function(){
 	// 읽기
 	$("tr").click(function(){
-		alert('일단 눌리긴 함?');
 		if(this.id > 0){
 			window.location.href="./read.asp?bno="+this.id;
 		}
