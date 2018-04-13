@@ -48,59 +48,62 @@ if(session.userId == null || session.userId == ""){
 	<div class="row">
 		<div class="col-sm-12">
 			<% if(bno == null || bno == ""){ %>
-			<h2>게시글 쓰기</h2><br/>
-			<div class="form-group">
-				<label for="title">제목:</label>
-				<input type="text" class="form-control" id="title" name="title" placeholder="제목" />
-			</div>
-			<div class="form-group">
-				<label for="writer">작성자:</label>
-				<input type="text" class="form-control" id="writer" name="writer" value="<%= session.nickname %>" readonly />
-			</div>
-			<div class="form-group">
-				<label for="content">내용:</label>
-				<textarea class="form-control" rows="5" id="content" name="content"></textarea>
-			</div>
-			<div class="btn-group">
-				<button class="btn btn-secondary btn-list">목록</button>
-				<button class="btn btn-primary btn-write">쓰기</button>
-			</div>
+			<form action="./write" method="post" enctype="multipart/form-data" id="writeForm" name="writeForm">
+				<h2>게시글 쓰기</h2><br/>
+				<div class="form-group">
+					<label for="title">제목:</label>
+					<input type="text" class="form-control" id="title" name="title" placeholder="제목" />
+				</div>
+				<div class="form-group">
+					<label for="writer">작성자:</label>
+					<input type="text" class="form-control" id="writer" name="writer" value="<%= session.nickname %>" readonly />
+				</div>
+				<div class="form-group">
+					<label for="content">내용:</label>
+					<textarea class="form-control" rows="5" id="content" name="content"></textarea>
+				</div>
+				<div class="form-group">
+					<label for="content">첨부파일:</label>
+					<input type="file" class="form-control" id="attachment" name="attachment" />
+				</div>
+				<div class="btn-group">
+					<button class="btn btn-secondary btn-list">목록</button>
+					<button class="btn btn-primary btn-write">쓰기</button>
+				</div>
+			</form>
 			<% } else { %>
-			
-			<h2>게시글 수정</h2><br/>
-			<div class="form-group">
-				<label for="title">제목:</label>
-				<input type="text" class="form-control" id="title" name="title" placeholder="제목" value="<%=title%>"/>
-			</div>
-			<div class="form-group">
-				<label for="writer">작성자:</label>
-				<input type="text" class="form-control" id="writer" name="writer" value="<%= session.nickname %>" readonly />
-			</div>
-			<div class="form-group">
-				<label for="content">내용:</label>
-				<textarea class="form-control" rows="5" id="content" name="content"><%=content%></textarea>
-			</div>
-			<div class="btn-group">
-				<button class="btn btn-secondary btn-list">목록</button>
-				<button class="btn btn-primary btn-update">수정</button>
-			</div>
+			<form action="./update" method="post" enctype="multipart/form-data" id="updateForm" name="updateForm">
+				<input type="hidden" id="bno" name="bno" value="<%=bno%>" />
+				<h2>게시글 수정</h2><br/>
+				<div class="form-group">
+					<label for="title">제목:</label>
+					<input type="text" class="form-control" id="title" name="title" placeholder="제목" value="<%=title%>"/>
+				</div>
+				<div class="form-group">
+					<label for="writer">작성자:</label>
+					<input type="text" class="form-control" id="writer" name="writer" value="<%= session.nickname %>" readonly />
+				</div>
+				<div class="form-group">
+					<label for="content">내용:</label>
+					<textarea class="form-control" rows="5" id="content" name="content"><%=content%></textarea>
+				</div>
+				<div class="form-group">
+					<label for="content">첨부파일:</label>
+					<input type="file" class="form-control" id="attachment" name="attachment" />
+					<% if(file_idx != null && file_idx != ""){ %>
+					<a href="/board/download/<%=file_idx%>"><%=file_name%></a>
+					<% } %>
+				</div>
+				<div class="btn-group">
+					<button class="btn btn-secondary btn-list">목록</button>
+					<button class="btn btn-primary btn-update">수정</button>
+				</div>
+			</form>
 			<% }%>
 		</div>
 	</div>
 </div>
 
-<% if(bno == null || bno == ""){%>
-<form action="./write" method="post" id="frm" name="frm">
-	<input type="hidden" name="title">
-	<input type="hidden" name="content">
-</form>
-<%}else{%>
-<form action="./update" method="post" id="updateForm" name="updateForm">
-	<input type="hidden" id="bno" name="bno" value="<%=bno%>" />
-	<input type="hidden" name="title" value="<%=title%>" />
-	<input type="hidden" name="content" value="<%=content%>" />
-</form>
-<%}%>
 <!-- Footer -->
 <footer class="container-fluid text-center bg-grey">
 	<a href="#myPage" title="To Top">
@@ -120,16 +123,12 @@ $(document).ready(function(){
 	//쓰기
 	$(".btn-write").click(function(){
 		if(confirm("글을 작성하시겠습니까?")){
-			document.frm.title.value=$("#title").val();
-			document.frm.content.value=$("#content").val();
-			document.frm.submit();
+			$("#writeForm").submit();
 		}	
 	});
 	//수정
 	$(".btn-update").click(function(){
 		if(confirm("글을 수정하시겠습니까?")){
-			$("#updateForm").find("input[name=title]").val($("#title").val());
-			$("#updateForm").find("input[name=content]").val($("#content").val());
 			$("#updateForm").submit();
 		}
 	});

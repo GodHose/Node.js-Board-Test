@@ -49,6 +49,12 @@
 				<label for="content">내용:</label>
 				<textarea class="form-control" rows="5" id="content" name="content" readonly><%= content%></textarea>
 			</div>
+			<% if(file_idx != null && file_idx != ""){ %>
+			<div class="form-group">
+				<label for="content">첨부파일:</label>
+				<a href="/board/download/<%=file_idx%>"><%=file_name%></a>
+			</div>
+			<% } %>
 			<div class="btn-group">
 				<button class="btn btn-secondary btn-list">목록</button>
 				<% if(session.userId == writer){ %>

@@ -8,6 +8,9 @@ var flash = require('express-flash');
 var app = express();
 var session = require('express-session');
 
+//
+var cors = require('cors');
+
 // PORT
 var port = 3333;
 app.set('port', port);
@@ -19,6 +22,7 @@ app.engine('html', require('ejs').renderFile);
 
 // STATIC
 app.use(express.static('public'));
+app.use(express.static('uploads'));
 
 // POST
 app.use(bodyParser.json());
@@ -38,6 +42,7 @@ server.listen(app.get('port'));
 
 // MIDDLEWARE
 app.use(flash());
+app.use(cors());
 
 // ROUTER
 var routerIndex = require('./routes/index');
