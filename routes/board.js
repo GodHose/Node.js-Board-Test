@@ -33,7 +33,7 @@ router.route('/list').get(function(req, res){
 	
 	var con = mysql.createConnection(dbconfig);
 	var sql = "SELECT bno, title, nickname, regdate, viewcnt FROM tbl_board ORDER BY bno DESC";
-	con.query(sql, function(err, result, rows, fields){
+	con.query(sql, function(err, result){
 		if(err)throw err;
 
 		res.send(result);

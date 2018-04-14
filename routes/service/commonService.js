@@ -1,6 +1,10 @@
 var commonService = {};
 
 commonService.redirectWithMessage = function(req, res, url, msg){
+	// 인코딩 설정에 따른 처리
+	msg = msg.replace(/\n/gi, "\\n"); 
+	
+	// 알럿 매개변수 설정 및 리다이렉팅
 	req.flash('msg', msg);
 	res.redirect(url);
 }

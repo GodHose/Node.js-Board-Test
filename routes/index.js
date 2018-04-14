@@ -72,8 +72,7 @@ router.route('/login').post(function(req, res){
 		if(err)throw err;
 
 		if(result == null || result == ""){ // 찾을 수 없는 아이디 예외 처리
-			console.log('걸림');
-			commonService.redirectWithMessage(req, res, '/', '존재하지 않는 계정입니다\n\n아이디나 패스워드를 다시 확인해 주십시오');
+			commonService.redirectWithMessage(req, res, '/', '존재하지 않는 계정입니다.\n\n아이디나 패스워드를 다시 확인해 주십시오');
 			return;
 		}
 
