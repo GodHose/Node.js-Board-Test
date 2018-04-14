@@ -1,6 +1,7 @@
 var express = require('express');
 var mysql = require('mysql');
 var dbconfig = require('./config/database.js');
+var commonService = require('./service/commonService.js');
 var router = express.Router();
 var session = require('express-session');
 
@@ -61,9 +62,11 @@ router.route('/write')
 
 			console.log(result.message);
 
+			url = "/";
+			msg = "성공적으로 글을 게시하였습니다";
+
 			if(attachment == null){
-				req.flash('msg', '성공적으로 글을 게시하였습니다');
-				res.redirect('/');
+				commonService.redirectWithMessage(req, res, url, msg);
 				return;
 			}
 			else{
@@ -86,8 +89,7 @@ router.route('/write')
 						console.dir(attachment);
 						console.dir('#=====#');
 
-						req.flash('msg', '성공적으로 글을 게시하였습니다');
-						res.redirect('/');
+						commonService.redirectWithMessage(req, res, url, msg);
 						return;
 					});
 				});
@@ -145,9 +147,11 @@ router.route('/update')
 			if(err)throw err;
 			console.log(result);
 
+			url = '/board/read?bno='+bno;
+			msg = '성공적으로 글을 수정하였습니다';
+
 			if(attachment == null){
-				req.flash('msg', '성공적으로 글을 수정하였습니다');
-				res.redirect('/board/read?bno='+bno);
+				commonService.redirectWithMessage(req, res, url, msg);
 				return;
 			}
 			else{
@@ -165,8 +169,7 @@ router.route('/update')
 					console.dir(attachment);
 					console.dir('#=====#');
 
-					req.flash('msg', '성공적으로 글을 수정하였습니다');
-					res.redirect('/board/read?bno='+bno);
+					commonService.redirectWithMessage(req, res, url, msg);
 					return;
 				});
 			}
@@ -198,6 +201,11 @@ router.route('/read').get(function(req, res){
 		con.query(sql, function(err, result){
 			if(err)throw err;
 			console.log(result);
+
+			if(result == null || result == ""){ // 찾을 수 없는 게시글 예외 처리
+				commonService.backWithMessage(req, res, '존재하지 않는 게시글입니다');
+				return;
+			}
 	
 			title = result[0].title;
 			writer = result[0].writer;
@@ -230,8 +238,14 @@ router.route('/download/:fileid').get(function(req, res){
 	con.query(sql, function(err, result){
 		if(err)throw err;
 
+		if(result == null || result == ""){ // 찾을 수 없는 첨부파일 예외 처리
+			commonService.backWithMessage(req, res, '존재하지 않는 파일입니다');
+			return;
+		}
+		
 		file_path = result[0].file_path;
 		res.download(file_path);
+		
 	});
 });
 

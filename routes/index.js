@@ -1,6 +1,7 @@
 var express = require('express');
 var mysql = require('mysql');
-var dbconfig = require('./config/database.js')
+var dbconfig = require('./config/database.js');
+var commonService = require('./service/commonService.js');
 var router = express.Router();
 var session = require('express-session');
 
@@ -61,20 +62,22 @@ router.route('/login').post(function(req, res){
 	console.log('(ID:' + req.body.id + '/PW:' + req.body.pw + ') 로그인 시도');
 	// id, pw 누락
 	if(req.body.id == "" || req.body.pw == ""){
-		return false;
+		commonService.redirectWithMessage(req, res, '/', '필수 정보가 누락되어 있습니다\n\n다시 시도해 주십시오');
+		return;
 	}
 
 	var con = mysql.createConnection(dbconfig);
 	var sql = "SELECT name FROM tbl_login WHERE id = '" + req.body.id + "' AND pw = '" + req.body.pw + "'";
 	con.query(sql, function(err, result, rows, fields){
 		if(err)throw err;
-		var nickname = result[0].name;
 
-		if(nickname == null || nickname == ""){
-			console.log('로그인 실패');
-			res.redirect('/');
-			return false;
+		if(result == null || result == ""){ // 찾을 수 없는 아이디 예외 처리
+			console.log('걸림');
+			commonService.redirectWithMessage(req, res, '/', '존재하지 않는 계정입니다\n\n아이디나 패스워드를 다시 확인해 주십시오');
+			return;
 		}
+
+		var nickname = result[0].name;
 	
 		console.log('로그인 성공');
 		req.session.userId = req.body.id;
@@ -98,9 +101,8 @@ router.route('/logout').post(function(req, res){
 
 router.route('/account').post(function(req, res){
 	if(req.body.id == "" || req.body.pw == "" || req.body.nick == ""){
-		req.flash('msg','필수 정보가 누락되어 있습니다');
-		res.redirect('/');
-		return false;
+		commonService.redirectWithMessage(req, res, '/', '필수 정보가 누락되어 있습니다');
+		return;
 	}
 
 	id = req.body.id;
@@ -114,22 +116,16 @@ router.route('/account').post(function(req, res){
 		console.log(result);
 
 		if(result[0].cnt > 0){
-			req.flash('msg', '중복되는 아이디가 존재합니다');
-			res.redirect('/');
-			return false;
+			commonService.redirectWithMessage(req, res, '/', '중복되는 아이디가 존재합니다');
+		return;
 		}
 
 		sql = "	INSERT INTO tbl_login(id, pw, name) VALUES('" + id + "', '" + pw + "', '" + nick + "')";
 		con.query(sql, function(err, result){
 			if(err)throw err;
 			console.log(result.message);
-		
-			//req.session.userId = id;
-			//req.session.nickname = nick;
 
-			//req.flash('session', req.session);
-			req.flash('msg', '성공적으로 계정이 생성되었습니다');
-			res.redirect('/');
+			commonService.redirectWithMessage(req, res, '/', '성공적으로 계정이 생성되었습니다');
 		});
 	});
 });
