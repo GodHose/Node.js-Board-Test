@@ -2,6 +2,7 @@ var express = require('express');
 var mysql = require('mysql');
 var dbconfig = require('./config/database.js');
 var commonService = require('./service/commonService.js');
+var dbService = require('./service/dbService.js');
 var router = express.Router();
 var session = require('express-session');
 
@@ -18,43 +19,61 @@ router.route('/').all(function(req, res){
 	param.page = page;
 	param.pageSize = pageSize;
 
+	var boardCnt = 0;
+
 	var con = mysql.createConnection(dbconfig);
-	var sql = "SELECT COUNT(*) as cnt FROM tbl_board";
-	con.query(sql, function(err, result){
-		if(err)throw err;
-		console.log(result);
-		var cnt = result[0].cnt;
-		
-		if(cnt <= 0){
-			res.render('index.html',{
-				cnt: cnt
-				,param:param
-				,session: req.session
-				,msg:''
-			});
-			return false;
-		}
+	sql = "SELECT COUNT(*) as cnt FROM tbl_board";
 
-		sql =	" SELECT bno, title, nickname, regdate, viewcnt";
-		sql +=	" FROM tbl_board";
-		sql +=	" ORDER BY bno DESC";
-		sql +=	" LIMIT " + ((page-1)*pageSize) + ", " + pageSize;
-		//sql +=	" ORDER BY bno DESC";
-		con.query(sql, function(err, result){
-			if(err)throw err;
+	var promise = dbService.runSQL(con, sql);
+	promise
+		.then(function(result){
 			console.log(result);
-			console.log(param);
 			
-			res.render('index.html',{
-				cnt:cnt
-				,param:param
-				,result: result
-				,session: req.session
-				,msg:''
-			});
-		});
+			var cnt = result[0].cnt;
+			console.log(cnt);
+			
+			if(cnt <= 0){
+				return Promise.resolve(null);
+			}
 
-	});
+			boardCnt = cnt;			
+
+			sql =	" SELECT bno, title, nickname, regdate, viewcnt";
+			sql +=	" FROM tbl_board";
+			sql +=	" ORDER BY bno DESC";
+			sql +=	" LIMIT " + ((page-1)*pageSize) + ", " + pageSize;
+
+			return dbService.runSQL(con, sql);
+			
+		}, function(error){
+			console.error("에러: " + error);
+		})
+		.then(function(result){
+
+			console.dir(result);
+			console.dir(param);
+
+			if(result == null){
+				res.render('index.html',{
+					cnt: boardCnt
+					,param:param
+					,session: req.session
+					,msg:''
+				});
+			}
+			else{
+				res.render('index.html',{
+					cnt:boardCnt
+					,param:param
+					,result: result
+					,session: req.session
+					,msg:''
+				});
+			}
+
+		}, function(error){
+			console.error("에러: " + error);
+		});
 });
 
 router.route('/login').post(function(req, res){
@@ -127,6 +146,27 @@ router.route('/account').post(function(req, res){
 			commonService.redirectWithMessage(req, res, '/', '성공적으로 계정이 생성되었습니다');
 		});
 	});
+});
+
+
+
+router.route('/async').get(function(req, res){
+	var con = mysql.createConnection(dbconfig);
+	var sql = "SELECT bno FROM tbl_board ORDER BY bno DESC LIMIT 1";
+
+	var promise = dbService.runSQL(con, sql);
+	promise
+		.then(function(result){
+			sql = "SELECT viewcnt FROM tbl_board WHERE bno = '"+result[0].bno+"'";
+			return dbService.runSQL(con, sql);
+		}, function(error){
+			console.error("에러: " + error);
+		})
+		.then(function(result){
+			console.dir(result);
+		}, function(error){
+			console.error("에러: " + error);
+		});
 });
 
 module.exports = router;
